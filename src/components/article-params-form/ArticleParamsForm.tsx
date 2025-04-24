@@ -19,12 +19,12 @@ import styles from './ArticleParamsForm.module.scss';
 import { useState, useEffect, useRef, FormEvent } from 'react';
 
 export type ArticleParamsFormProps = {
-	setAppState: (value: ArticleStateType) => void;
+	setArticleState: (value: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
-	const { setAppState } = props;
-	const [isOpen, setIsOpen] = useState(false);
+	const { setArticleState } = props;
+	const [isMenuOpen, setisMenuOpen] = useState(false);
 	const sidebarRef = useRef<HTMLElement>(null);
 	const [formState, setFormState] = useState(defaultArticleState);
 
@@ -34,29 +34,28 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 				sidebarRef.current &&
 				!sidebarRef.current.contains(e.target as Node)
 			) {
-				setIsOpen(false);
+				setisMenuOpen(false);
 			}
 		};
-		if (isOpen) {
+		if (isMenuOpen) {
 			document.addEventListener('mousedown', handleClickOutside);
 		}
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [isOpen]);
+	}, [isMenuOpen]);
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
-		setAppState(formState);
+		setArticleState(formState);
 	};
 
-	const handleReset = (e: FormEvent) => {
-		e.preventDefault();
+	const handleReset = () => {
 		setFormState(defaultArticleState);
-		setAppState(defaultArticleState);
+		setArticleState(defaultArticleState);
 	};
 
-	const handleChange = (fieldName: string) => {
+	const handleChange = (fieldName: keyof ArticleStateType) => {
 		return (value: OptionType) => {
 			setFormState((currentFormState) => ({
 				...currentFormState,
@@ -68,19 +67,19 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	return (
 		<>
 			<ArrowButton
-				isOpen={isOpen}
+				isOpen={isMenuOpen}
 				onClick={() => {
-					setIsOpen((currentIsOpened) => !currentIsOpened);
+					setisMenuOpen((currentIsOpened) => !currentIsOpened);
 				}}
 			/>
 			<aside
 				ref={sidebarRef}
-				className={clsx(styles.container, isOpen && styles.container_open)}>
+				className={clsx(styles.container, isMenuOpen && styles.container_open)}>
 				<form
 					className={styles.form}
 					onSubmit={handleSubmit}
 					onReset={handleReset}>
-					<Text uppercase={true} weight={800} size={31}>
+					<Text as={'h2'} uppercase={true} weight={800} size={31}>
 						Задайте параметры
 					</Text>
 					<Select
